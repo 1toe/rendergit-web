@@ -1,0 +1,70 @@
+.file-tree {
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.tree-controls {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tree-control-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  color: var(--text);
+}
+
+.tree-control-btn:hover {
+  background: var(--border);
+  transform: scale(1.05);
+}
+
+.tree-nodes {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Scrollbar styling */
+.tree-nodes::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tree-nodes::-webkit-scrollbar-track {
+  background: var(--sidebar-bg);
+}
+
+.tree-nodes::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.tree-nodes::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Dark theme adjustments */
+.dark-theme .file-tree {
+  background: var(--sidebar-bg);
+  border-color: var(--border);
+}
+
+.dark-theme .tree-control-btn {
+  background: var(--bg);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.dark-theme .tree-control-btn:hover {
+  background: var(--border);
+}

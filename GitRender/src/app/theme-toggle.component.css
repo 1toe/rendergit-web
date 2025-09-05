@@ -1,0 +1,87 @@
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  user-select: none;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.theme-toggle-btn:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.theme-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.theme-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .theme-toggle-btn {
+    padding: 0.4rem 0.6rem;
+    gap: 0.25rem;
+  }
+
+  .theme-text {
+    display: none; /* Hide text on small screens */
+  }
+
+  .theme-icon {
+    font-size: 1.2rem;
+  }
+}
+
+/* Dark theme adjustments */
+.dark-theme .theme-toggle-btn {
+  background: var(--accent);
+  color: #fff;
+}
+
+.dark-theme .theme-toggle-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* Animation for theme transitions */
+.theme-toggle-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.theme-toggle-btn:hover::before {
+  left: 100%;
+}
