@@ -10,7 +10,7 @@ const Header: React.FC = () => {
   const { state, setRepoUrl, setLoading, setError, setResult, setViewMode, clearState } = useApp();
   const { canGoBack, canGoForward, goBack, goForward } = useNavigation();
   const { toggleTheme } = useTheme();
-  const [repoUrlInput] = useState(state.repoUrl);
+  const [repoUrlInput, setRepoUrlInput] = useState(state.repoUrl);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,10 +37,6 @@ const Header: React.FC = () => {
 
   return (
     <>
-      <nav className="top-shortcuts">
-        <a href="/" className="home-link">Inicio</a>
-        <a href="/repository" className="repo-browser-link">Repository Browser</a>
-      </nav>
 
       <header className="topbar">
         <div className="header-left">
@@ -75,7 +71,7 @@ const Header: React.FC = () => {
               type="text"
               placeholder="https://github.com/usuario/repositorio"
               value={repoUrlInput}
-              onChange={(e) => setRepoUrl(e.target.value)}
+              onChange={(e) => setRepoUrlInput(e.target.value)}
               required
               aria-label="URL del repositorio"
             />
