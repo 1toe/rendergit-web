@@ -1,0 +1,153 @@
+/* Header Styles */
+.top-shortcuts {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--sidebar);
+  border-bottom: 1px solid var(--border);
+}
+
+.top-shortcuts a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.top-shortcuts a:hover {
+  text-decoration: underline;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 200px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--accent);
+  margin: 0;
+}
+
+.nav-controls {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--sidebar);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--fg);
+}
+
+.nav-btn:hover:not(:disabled) {
+  background-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+.nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.header-center {
+  flex: 1;
+  max-width: 600px;
+}
+
+.repo-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.repo-form input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.repo-form button {
+  padding: 0.5rem 1rem;
+  background-color: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.repo-form button:hover:not(:disabled) {
+  background-color: #4f46e5;
+}
+
+.repo-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  justify-content: flex-end;
+}
+
+.scroll-top-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: var(--sidebar);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--fg);
+}
+
+.scroll-top-btn:hover {
+  background-color: var(--accent);
+  color: var(--accent-fg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .header-left,
+  .header-center,
+  .header-right {
+    min-width: auto;
+  }
+
+  .repo-form {
+    width: 100%;
+  }
+
+  .repo-form input {
+    flex: 1;
+  }
+}
