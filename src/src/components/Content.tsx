@@ -1,6 +1,8 @@
 import React from 'react';
 import { useApp } from '../services/appStateService';
 import { useIncrementalRendering } from '../services/incrementalRenderingService';
+import CodeViewer from './CodeViewer';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Content.css';
 
 const Content: React.FC = () => {
@@ -9,22 +11,52 @@ const Content: React.FC = () => {
 
   if (state.error) {
     return (
-      <main className="content">
-        <div className="error">
+      <motion.main 
+        className="content"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <motion.div 
+          className="error"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
           <strong>Error:</strong> {state.error}
-        </div>
-      </main>
+        </motion.div>
+      </motion.main>
     );
   }
 
   if (state.loading) {
     return (
-      <main className="content">
-        <div className="loading-state">
-          <div className="spinner"></div>
-          <p>Procesando repositorio…</p>
-        </div>
-      </main>
+      <motion.main 
+        className="content"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <motion.div 
+          className="loading-state"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div 
+            className="spinner"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            Procesando repositorio…
+          </motion.p>
+        </motion.div>
+      </motion.main>
     );
   }
 
@@ -65,7 +97,11 @@ const Content: React.FC = () => {
                   {file.isMarkdown ? (
                     <div dangerouslySetInnerHTML={{ __html: file.content }} />
                   ) : (
-                    <pre><code>{file.content}</code></pre>
+                    <CodeViewer 
+                      content={file.content} 
+                      fileName={file.path}
+                      language={file.path.split('.').pop()}
+                    />
                   )}
                 </div>
                 <a className="back-top" href="#top" aria-label="Volver al inicio">

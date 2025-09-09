@@ -1,0 +1,192 @@
+.directory-tree {
+  background: var(--color-bg-secondary, #ffffff);
+  border: 1px solid var(--color-border, #e1e4e8);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.tree-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-bg-header, #f6f8fa);
+  border-bottom: 1px solid var(--color-border, #e1e4e8);
+}
+
+.tree-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #24292e);
+}
+
+.file-count {
+  font-size: 12px;
+  color: var(--color-text-secondary, #586069);
+  background: var(--color-bg-badge, #f1f3f4);
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+.tree-content {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.tree-node {
+  position: relative;
+}
+
+.tree-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.4;
+  border-radius: 3px;
+  margin: 0 8px;
+  transition: background-color 0.15s ease;
+}
+
+.tree-item:hover {
+  background: var(--color-bg-hover, #f6f8fa);
+}
+
+.tree-item.selected {
+  background: var(--color-bg-selected, #e1f5fe);
+  color: var(--color-text-selected, #0366d6);
+}
+
+.tree-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 4px;
+  color: var(--color-text-secondary, #586069);
+  transition: transform 0.15s ease;
+}
+
+.folder-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  color: var(--color-folder, #54aeff);
+}
+
+.file-icon {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  color: var(--color-text-secondary, #586069);
+}
+
+.tree-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+.file-size {
+  font-size: 11px;
+  color: var(--color-text-tertiary, #8b949e);
+  margin-left: 8px;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+}
+
+.tree-children {
+  margin-left: 0;
+}
+
+/* Diferentes colores para tipos de archivo */
+.tree-item .file-icon {
+  color: var(--color-file, #586069);
+}
+
+.tree-item[data-extension=".js"] .file-icon,
+.tree-item[data-extension=".jsx"] .file-icon {
+  color: #f7df1e;
+}
+
+.tree-item[data-extension=".ts"] .file-icon,
+.tree-item[data-extension=".tsx"] .file-icon {
+  color: #3178c6;
+}
+
+.tree-item[data-extension=".py"] .file-icon {
+  color: #3776ab;
+}
+
+.tree-item[data-extension=".css"] .file-icon {
+  color: #1572b6;
+}
+
+.tree-item[data-extension=".html"] .file-icon {
+  color: #e34c26;
+}
+
+.tree-item[data-extension=".json"] .file-icon {
+  color: #000000;
+}
+
+.tree-item[data-extension=".md"] .file-icon {
+  color: #083fa1;
+}
+
+/* Dark theme support */
+[data-theme="dark"] .directory-tree,
+.dark .directory-tree {
+  --color-bg-secondary: #0d1117;
+  --color-bg-header: #161b22;
+  --color-bg-badge: #21262d;
+  --color-bg-hover: rgba(255, 255, 255, 0.05);
+  --color-bg-selected: rgba(88, 166, 255, 0.15);
+  --color-border: #30363d;
+  --color-text-primary: #c9d1d9;
+  --color-text-secondary: #8b949e;
+  --color-text-tertiary: #6e7681;
+  --color-text-selected: #58a6ff;
+  --color-folder: #58a6ff;
+  --color-file: #8b949e;
+}
+
+/* Scrollbar styling */
+.tree-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tree-content::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary, #ffffff);
+}
+
+.tree-content::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar, #d1d5da);
+  border-radius: 4px;
+}
+
+.tree-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-scrollbar-hover, #959da5);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .tree-content {
+    max-height: 300px;
+  }
+  
+  .tree-item {
+    font-size: 13px;
+  }
+  
+  .tree-header h3 {
+    font-size: 13px;
+  }
+  
+  .file-count {
+    font-size: 11px;
+  }
+}

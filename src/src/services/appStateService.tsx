@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { ProcessResult } from './repoFlattenerService';
+import { ProcessResult, CommitInfo } from './repoFlattenerService';
 
 interface AppState {
   repoUrl: string;
+  selectedCommit: string | null;
+  availableCommits: CommitInfo[];
   loading: boolean;
   error: string | null;
   result: ProcessResult | null;
@@ -15,6 +17,8 @@ interface AppState {
 
 type AppAction =
   | { type: 'SET_REPO_URL'; payload: string }
+  | { type: 'SET_SELECTED_COMMIT'; payload: string | null }
+  | { type: 'SET_AVAILABLE_COMMITS'; payload: CommitInfo[] }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_RESULT'; payload: ProcessResult | null }
@@ -27,6 +31,8 @@ type AppAction =
 
 const initialState: AppState = {
   repoUrl: '',
+  selectedCommit: null,
+  availableCommits: [],
   loading: false,
   error: null,
   result: null,
@@ -41,6 +47,10 @@ const appReducer = (state: AppState, action: AppAction): AppState => {
   switch (action.type) {
     case 'SET_REPO_URL':
       return { ...state, repoUrl: action.payload };
+    case 'SET_SELECTED_COMMIT':
+      return { ...state, selectedCommit: action.payload };
+    case 'SET_AVAILABLE_COMMITS':
+      return { ...state, availableCommits: action.payload };
     case 'SET_LOADING':
       return { ...state, loading: action.payload };
     case 'SET_ERROR':
@@ -76,6 +86,8 @@ interface AppContextType {
   filteredToc: { anchor: string; rel: string; size: number; }[];
   // Action creators
   setRepoUrl: (url: string) => void;
+  setSelectedCommit: (commit: string | null) => void;
+  setAvailableCommits: (commits: CommitInfo[]) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setResult: (result: ProcessResult | null) => void;
@@ -105,6 +117,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     dispatch,
     filteredToc,
     setRepoUrl: (url: string) => dispatch({ type: 'SET_REPO_URL', payload: url }),
+    setSelectedCommit: (commit: string | null) => dispatch({ type: 'SET_SELECTED_COMMIT', payload: commit }),
+    setAvailableCommits: (commits: CommitInfo[]) => dispatch({ type: 'SET_AVAILABLE_COMMITS', payload: commits }),
     setLoading: (loading: boolean) => dispatch({ type: 'SET_LOADING', payload: loading }),
     setError: (error: string | null) => dispatch({ type: 'SET_ERROR', payload: error }),
     setResult: (result: ProcessResult | null) => dispatch({ type: 'SET_RESULT', payload: result }),

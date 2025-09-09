@@ -3,6 +3,21 @@ export interface RenderDecision {
   reason: string;
 }
 
+export interface CommitInfo {
+  sha: string;
+  message: string;
+  author: {
+    name: string;
+    email: string;
+    date: string;
+  };
+  committer: {
+    name: string;
+    email: string;
+    date: string;
+  };
+}
+
 export interface FileInfo {
   path: string;
   size: number;
@@ -36,9 +51,11 @@ const BINARY_EXTENSIONS = new Set([
 const MARKDOWN_EXTENSIONS = new Set(['.md', '.markdown', '.mdown', '.mkd', '.mkdn']);
 
 export class RepoFlattenerService {
-  async processRepo(url: string, signal?: AbortSignal): Promise<ProcessResult> {
+  async processRepo(url: string, commitSha?: string, signal?: AbortSignal): Promise<ProcessResult> {
     const { owner, repo } = this.parseRepoUrl(url);
-    const commit = await this.getLatestCommit(owner, repo, signal);
+    const commit = commitSha 
+      ? await this.getCommit(owner, repo, commitSha, signal)
+      : await this.getLatestCommit(owner, repo, signal);
     const tree = await this.getTree(owner, repo, commit.sha, signal);
 
     const files: FileInfo[] = [];
@@ -78,6 +95,32 @@ export class RepoFlattenerService {
     const owner = match[1];
     const repo = match[2].replace(/\.git$/, '');
     return { owner, repo };
+  }
+
+  async getCommits(repoUrl: string, perPage: number = 30): Promise<CommitInfo[]> {
+    const { owner, repo } = this.parseRepoUrl(repoUrl);
+    const commits = await this.fetchJson(`https://api.github.com/repos/${owner}/${repo}/commits?per_page=${perPage}`);
+    if (!Array.isArray(commits)) throw new Error('Error al obtener commits');
+    
+    return commits.map(commit => ({
+      sha: commit.sha,
+      message: commit.commit.message,
+      author: {
+        name: commit.commit.author.name,
+        email: commit.commit.author.email,
+        date: commit.commit.author.date
+      },
+      committer: {
+        name: commit.commit.committer.name,
+        email: commit.commit.committer.email,
+        date: commit.commit.committer.date
+      }
+    }));
+  }
+
+  private async getCommit(owner: string, repo: string, sha: string, signal?: AbortSignal): Promise<any> {
+    const commit = await this.fetchJson(`https://api.github.com/repos/${owner}/${repo}/commits/${sha}`, signal);
+    return commit;
   }
 
   private async getLatestCommit(owner: string, repo: string, signal?: AbortSignal): Promise<any> {

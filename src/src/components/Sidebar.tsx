@@ -1,17 +1,23 @@
 import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, X, Pin, PinOff } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Pin, PinOff, User, Bot, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../services/appStateService';
 import { useSearch } from '../services/searchService';
 import { useSettings } from '../services/settingsService';
+import DirectoryTree from './DirectoryTree';
 import './Sidebar.css';
 
 const Sidebar: React.FC = () => {
   const { state, setViewMode, setFilter, setSearchQuery } = useApp();
-  // const { fileTree, buildFileTree } = useFileService();
-  const { setSearchQuery: setSearch } = useSearch(state.result?.rendered || []);
+  const { 
+    searchQuery: searchServiceQuery, 
+    setSearchQuery: setSearchServiceQuery, 
+    searchResults, 
+    isSearching,
+    clearSearch: clearSearchService 
+  } = useSearch(state.result?.rendered || []);
   const { userPreferences, setSetting } = useSettings();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(userPreferences.sidebarCollapsed);
-  const [localSearchQuery, setLocalSearchQuery] = useState('');
 
   const toggleSidebar = () => {
     const newCollapsed = !sidebarCollapsed;
@@ -25,15 +31,13 @@ const Sidebar: React.FC = () => {
   };
 
   const handleSearch = (query: string) => {
-    setLocalSearchQuery(query);
+    setSearchServiceQuery(query);
     setSearchQuery(query);
-    setSearch(query);
   };
 
   const clearSearch = () => {
-    setLocalSearchQuery('');
+    clearSearchService();
     setSearchQuery('');
-    setSearch('');
   };
 
   const handleFilter = (filterValue: string) => {
@@ -45,38 +49,63 @@ const Sidebar: React.FC = () => {
   }
 
   return (
-    <aside className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
-      <div className="sidebar-header">
-        <button
+    <motion.aside 
+      className={`sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}
+      initial={{ x: -320, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      layout
+    >
+      <motion.div 
+        className="sidebar-header"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+      >
+        <motion.button
           type="button"
           className="sidebar-toggle"
           onClick={toggleSidebar}
           title={sidebarCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-        </button>
-        <button
+        </motion.button>
+        <motion.button
           type="button"
           className={`sidebar-pin ${userPreferences.sidebarPinned ? 'active' : ''}`}
           onClick={toggleSidebarPin}
           title="Fijar sidebar"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           {userPreferences.sidebarPinned ? <Pin size={16} /> : <PinOff size={16} />}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {!sidebarCollapsed && (
-        <div className="sidebar-content">
-          <div className="search-section">
+        <motion.div 
+          className="sidebar-content"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3, delay: 0.3 }}
+        >
+          <motion.div 
+            className="search-section"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+          >
             <h3>Búsqueda</h3>
             <div className="search-box">
               <input
                 type="search"
                 placeholder="Buscar archivos..."
-                value={localSearchQuery}
+                value={searchServiceQuery}
                 onChange={(e) => handleSearch(e.target.value)}
               />
-              {localSearchQuery && (
+              {searchServiceQuery && (
                 <button
                   type="button"
                   className="clear-btn"
@@ -87,7 +116,70 @@ const Sidebar: React.FC = () => {
                 </button>
               )}
             </div>
-          </div>
+          </motion.div>
+
+          {/* Resultados de búsqueda */}
+          <AnimatePresence>
+            {searchServiceQuery && (
+              <motion.div 
+                className="search-results-section"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h3>Resultados de búsqueda</h3>
+                {isSearching ? (
+                  <motion.div 
+                    className="search-loading"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    Buscando...
+                  </motion.div>
+                ) : searchResults.length > 0 ? (
+                  <ul className="search-results">
+                    {searchResults.map((result, index) => (
+                      <motion.li 
+                        key={index} 
+                        className="search-result-item"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ scale: 1.02 }}
+                      >
+                        <div className="search-result-file">
+                          <strong>{result.file.path}</strong>
+                          <span className="match-count">({result.matches.length} coincidencias)</span>
+                        </div>
+                        <div className="search-matches">
+                          {result.matches.slice(0, 3).map((match, matchIndex) => (
+                            <div key={matchIndex} className="search-match">
+                              <span className="line-number">Línea {match.line}:</span>
+                              <span className="match-context">{match.context}</span>
+                            </div>
+                          ))}
+                          {result.matches.length > 3 && (
+                            <div className="more-matches">
+                              +{result.matches.length - 3} más...
+                            </div>
+                          )}
+                        </div>
+                      </motion.li>
+                    ))}
+                  </ul>
+                ) : (
+                  <motion.div 
+                    className="no-results"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    No se encontraron resultados
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="filter-section">
             <h3>Filtrar</h3>
@@ -126,6 +218,18 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
 
+          {/* Directory Tree */}
+          <DirectoryTree 
+            files={state.result.rendered?.map(file => ({ path: file.path, size: file.size })) || []}
+            onFileSelect={(filePath) => {
+              // Scroll to the file
+              const element = document.getElementById(`file-${filePath}`);
+              if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+              }
+            }}
+          />
+
           <div className="toc-section">
             <h3>Contenido ({state.result.toc?.length || 0})</h3>
             <nav>
@@ -148,20 +252,22 @@ const Sidebar: React.FC = () => {
                 className={`view-btn ${state.viewMode === 'human' ? 'active' : ''}`}
                 onClick={() => setViewMode('human')}
               >
-                👤 Humano
+                <User size={16} />
+                Humano
               </button>
               <button
                 type="button"
                 className={`view-btn ${state.viewMode === 'llm' ? 'active' : ''}`}
                 onClick={() => setViewMode('llm')}
               >
-                🤖 LLM
+                <Bot size={16} />
+                LLM
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
-    </aside>
+    </motion.aside>
   );
 };
 
