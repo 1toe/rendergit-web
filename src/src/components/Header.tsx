@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, ArrowUp, GitCommit, Sun, Moon } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, GitCommit, Moon, User, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../services/appStateService';
 import { useNavigation } from '../services/navigationService';
@@ -214,6 +214,35 @@ const Header: React.FC = () => {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
+          {state.result && (
+            <motion.div 
+              className="view-options-header"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.3, delay: 0.4 }}
+            >
+              <motion.button
+                type="button"
+                className={`view-btn-header ${state.viewMode === 'human' ? 'active' : ''}`}
+                onClick={() => setViewMode('human')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title="Vista para humanos"
+              >
+                <User size={16} />
+              </motion.button>
+              <motion.button
+                type="button"
+                className={`view-btn-header ${state.viewMode === 'llm' ? 'active' : ''}`}
+                onClick={() => setViewMode('llm')}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                title="Vista para LLM"
+              >
+                <Bot size={16} />
+              </motion.button>
+            </motion.div>
+          )}
           <motion.button
             type="button"
             className="theme-toggle"

@@ -88,7 +88,12 @@ const Content: React.FC = () => {
 
           <div className="files">
             {visibleRendered?.map((file: any, index: number) => (
-              <article key={index} className="file" id={`file-${file.path}`}>
+              <article 
+                key={index} 
+                className="file" 
+                id={`file-${file.path}`}
+                data-file-path={file.path}
+              >
                 <header className="file-header">
                   <h3>{file.path}</h3>
                   <span className="file-size">{file.size} bytes</span>
@@ -111,41 +116,6 @@ const Content: React.FC = () => {
             ))}
           </div>
 
-          {(state.result.skippedBinary?.length > 0 || state.result.skippedLarge?.length > 0) && (
-            <section className="skips">
-              <div className="skips-card">
-                <h3>Archivos Omitidos</h3>
-
-                {state.result.skippedBinary?.length > 0 && (
-                  <div className="skip-section">
-                    <h4>{state.result.skippedBinary.length} Binarios</h4>
-                    <ul className="skipped-list">
-                      {state.result.skippedBinary.map((file: any, index: number) => (
-                        <li key={index} className="skipped-item">
-                          <span className="file-path">{file.path}</span>
-                          <span className="badge destructive">{file.size} bytes</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {state.result.skippedLarge?.length > 0 && (
-                  <div className="skip-section">
-                    <h4>{state.result.skippedLarge.length} Archivos Grandes</h4>
-                    <ul className="skipped-list">
-                      {state.result.skippedLarge.map((file: any, index: number) => (
-                        <li key={index} className="skipped-item">
-                          <span className="file-path">{file.path}</span>
-                          <span className="badge warning">{file.size} bytes</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
         </div>
       ) : (
         <div className="llm-view">

@@ -32,7 +32,7 @@ export const useSearch = (files: FileInfo[] = []) => {
     wholeWord: false,
     regex: false,
     fileTypes: [],
-    maxResults: 100
+    maxResults: 50  // Reducir el número máximo de resultados
   };
 
   const performSearch = useCallback(async (query: string) => {
@@ -48,7 +48,10 @@ export const useSearch = (files: FileInfo[] = []) => {
       const results: SearchResult[] = [];
       const searchTerm = searchOptions.caseSensitive ? query : query.toLowerCase();
 
-      for (const file of files) {
+      // Limitar la búsqueda solo a los primeros 100 archivos para mejorar performance
+      const filesToSearch = files.slice(0, 100);
+
+      for (const file of filesToSearch) {
         if (!file.content) continue;
 
         const lines = file.content.split('\n');

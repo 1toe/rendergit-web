@@ -9,10 +9,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: 10px 16px;
   background: var(--color-bg-header, #f1f3f4);
   border-bottom: 1px solid var(--color-border, #e1e4e8);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .file-name {

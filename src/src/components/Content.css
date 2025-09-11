@@ -138,7 +138,7 @@
 
 .file-header h3 {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--color-text-primary);
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
@@ -148,7 +148,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-text-tertiary);
   background: var(--color-bg-tertiary);
   padding: 4px 8px;
@@ -159,7 +159,7 @@
 .file-body {
   padding: 0;
   font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
   overflow: hidden;
 }

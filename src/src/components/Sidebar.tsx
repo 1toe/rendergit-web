@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, X, Pin, PinOff, User, Bot, Search } from 'lucide-react';
+import React, { useState, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, X, Pin, PinOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../services/appStateService';
 import { useSearch } from '../services/searchService';
@@ -7,8 +7,27 @@ import { useSettings } from '../services/settingsService';
 import DirectoryTree from './DirectoryTree';
 import './Sidebar.css';
 
+// Hook personalizado para debouncing
+const useDebounce = (callback: Function, delay: number) => {
+  const [debounceTimer, setDebounceTimer] = useState<number>();
+
+  const debouncedCallback = useCallback((...args: any[]) => {
+    if (debounceTimer) {
+      clearTimeout(debounceTimer);
+    }
+
+    const newTimer = window.setTimeout(() => {
+      callback(...args);
+    }, delay);
+
+    setDebounceTimer(newTimer);
+  }, [callback, delay, debounceTimer]);
+
+  return debouncedCallback;
+};
+
 const Sidebar: React.FC = () => {
-  const { state, setViewMode, setFilter, setSearchQuery } = useApp();
+  const { state, setSearchQuery } = useApp();
   const { 
     searchQuery: searchServiceQuery, 
     setSearchQuery: setSearchServiceQuery, 
@@ -31,17 +50,64 @@ const Sidebar: React.FC = () => {
   };
 
   const handleSearch = (query: string) => {
-    setSearchServiceQuery(query);
-    setSearchQuery(query);
+    setSearchQuery(query); // Actualiza inmediatamente el valor visual
+    debouncedSearch(query); // Ejecuta la búsqueda con delay
   };
+
+  const debouncedSearch = useDebounce((query: string) => {
+    setSearchServiceQuery(query);
+  }, 300);
 
   const clearSearch = () => {
     clearSearchService();
     setSearchQuery('');
   };
 
-  const handleFilter = (filterValue: string) => {
-    setFilter(filterValue);
+  const handleFileNavigation = (filePath: string, lineNumber?: number) => {
+    // Función para navegar a un archivo específico y línea
+    const targetElement = document.querySelector(`[data-file-path="${filePath}"]`);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      
+      // Si hay un número de línea, intentar navegar a la línea específica
+      if (lineNumber) {
+        setTimeout(() => {
+          const lineElement = targetElement.querySelector(`[data-line="${lineNumber}"]`);
+          if (lineElement) {
+            lineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 300);
+      }
+    }
+  };
+
+  const shortenPath = (path: string, maxLength: number = 35) => {
+    if (path.length <= maxLength) return path;
+    
+    const parts = path.split('/');
+    if (parts.length <= 2) return path;
+    
+    const fileName = parts[parts.length - 1];
+    const firstDir = parts[0];
+    
+    if (fileName.length + firstDir.length + 3 <= maxLength) {
+      return `${firstDir}/.../${fileName}`;
+    }
+    
+    return `.../${fileName}`;
+  };
+
+  const highlightSearchTerm = (text: string, searchTerm: string) => {
+    if (!searchTerm.trim()) return text;
+    
+    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part) => 
+      regex.test(part) ? 
+        `<span class="match-highlight">${part}</span>` : 
+        part
+    ).join('');
   };
 
   if (!state.result) {
@@ -147,21 +213,36 @@ const Sidebar: React.FC = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.1 }}
                         whileHover={{ scale: 1.02 }}
+                        onClick={() => handleFileNavigation(result.file.path, result.matches[0]?.line)}
                       >
                         <div className="search-result-file">
-                          <strong>{result.file.path}</strong>
-                          <span className="match-count">({result.matches.length} coincidencias)</span>
+                          <strong title={result.file.path}>
+                            {shortenPath(result.file.path)}
+                          </strong>
+                          <span className="match-count">{result.matches.length}</span>
                         </div>
                         <div className="search-matches">
-                          {result.matches.slice(0, 3).map((match, matchIndex) => (
-                            <div key={matchIndex} className="search-match">
-                              <span className="line-number">Línea {match.line}:</span>
-                              <span className="match-context">{match.context}</span>
+                          {result.matches.slice(0, 2).map((match, matchIndex) => (
+                            <div 
+                              key={matchIndex} 
+                              className="search-match"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleFileNavigation(result.file.path, match.line);
+                              }}
+                            >
+                              <span className="line-number">{match.line}</span>
+                              <span 
+                                className="match-context"
+                                dangerouslySetInnerHTML={{
+                                  __html: highlightSearchTerm(match.context, searchServiceQuery)
+                                }}
+                              />
                             </div>
                           ))}
-                          {result.matches.length > 3 && (
+                          {result.matches.length > 2 && (
                             <div className="more-matches">
-                              +{result.matches.length - 3} más...
+                              +{result.matches.length - 2} más
                             </div>
                           )}
                         </div>
@@ -181,17 +262,12 @@ const Sidebar: React.FC = () => {
             )}
           </AnimatePresence>
 
-          <div className="filter-section">
-            <h3>Filtrar</h3>
-            <input
-              type="text"
-              placeholder="Filtrar archivos"
-              value={state.filter}
-              onChange={(e) => handleFilter(e.target.value)}
-            />
-          </div>
-
-          <div className="repo-info-section">
+          <motion.div 
+            className="repo-info-section"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.3, delay: 0.6 }}
+          >
             <h3>Información del Repositorio</h3>
             <div className="repo-info">
               <div className="repo-link">
@@ -216,7 +292,7 @@ const Sidebar: React.FC = () => {
                 </span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Directory Tree */}
           <DirectoryTree 
@@ -242,28 +318,6 @@ const Sidebar: React.FC = () => {
                 ))}
               </ul>
             </nav>
-          </div>
-
-          <div className="view-options-section">
-            <h3>Opciones de Vista</h3>
-            <div className="view-options">
-              <button
-                type="button"
-                className={`view-btn ${state.viewMode === 'human' ? 'active' : ''}`}
-                onClick={() => setViewMode('human')}
-              >
-                <User size={16} />
-                Humano
-              </button>
-              <button
-                type="button"
-                className={`view-btn ${state.viewMode === 'llm' ? 'active' : ''}`}
-                onClick={() => setViewMode('llm')}
-              >
-                <Bot size={16} />
-                LLM
-              </button>
-            </div>
           </div>
         </motion.div>
       )}
