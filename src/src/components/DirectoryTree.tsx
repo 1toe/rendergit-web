@@ -17,15 +17,15 @@ interface DirectoryTreeProps {
 }
 
 const DirectoryTree: React.FC<DirectoryTreeProps> = ({ files, onFileSelect, selectedFile }) => {
-  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set(['/']));
+  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set(['']));
 
   // Construir el árbol de archivos
   const buildTree = (files: { path: string; size: number }[]): FileNode[] => {
     const pathMap = new Map<string, FileNode>();
 
     // Crear nodo raíz
-    const root: FileNode = { name: '', path: '/', type: 'directory', children: [] };
-    pathMap.set('/', root);
+    const root: FileNode = { name: '', path: '', type: 'directory', children: [] };
+    pathMap.set('', root);
 
     files.forEach(({ path, size }) => {
       const parts = path.split('/').filter(Boolean);
@@ -33,7 +33,7 @@ const DirectoryTree: React.FC<DirectoryTreeProps> = ({ files, onFileSelect, sele
       let currentNode = root;
 
       parts.forEach((part, index) => {
-        currentPath += '/' + part;
+        currentPath += (currentPath ? '/' : '') + part;
         const isFile = index === parts.length - 1;
         
         if (!pathMap.has(currentPath)) {

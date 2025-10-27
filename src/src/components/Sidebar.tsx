@@ -298,10 +298,12 @@ const Sidebar: React.FC = () => {
           <DirectoryTree 
             files={state.result.rendered?.map(file => ({ path: file.path, size: file.size })) || []}
             onFileSelect={(filePath) => {
+              // Normalizar la ruta eliminando barras iniciales si existen
+              const normalizedPath = filePath.startsWith('/') ? filePath.slice(1) : filePath;
               // Scroll to the file
-              const element = document.getElementById(`file-${filePath}`);
+              const element = document.getElementById(`file-${normalizedPath}`);
               if (element) {
-                element.scrollIntoView({ behavior: 'smooth' });
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             }}
           />

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, ArrowUp, GitCommit, Moon, User, Bot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../services/appStateService';
-import { useNavigation } from '../services/navigationService';
+import { useNavigation } from '../services/navigationService';1
 import { useTheme } from '../services/themeService';
 import { repoFlattenerService } from '../services/repoFlattenerService';
 import './Header.css';
